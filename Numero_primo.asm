@@ -9,10 +9,11 @@ org 0000h
 ;MAIN
 org 0100h
 START:
-	;aqui tem que colocar um numero
-	mov a, #013
+	;aqui tem que colocar um numero menor que 41
+	mov a, #041
 	mov 50h, a
-	mov b, #02
+	mov b, a
+	dec b
 	mov 51h, b
 	div ab
 	mov a, b
@@ -33,15 +34,80 @@ menos:
 	mov a, 51h
 	dec a
 	mov 51h, a
+	mov a, b
+	jz acabou2
 	call menos
 	ret
 
 acabou:
+	;aqui é primo
 	mov r4, #01h
+	ACALL lcd_init
+	mov a,#'N'
+	call sendCharacter
+	mov a,#'U'
+	call sendCharacter
+	mov a,#'M'
+	call sendCharacter
+	mov a,#'E'
+	call sendCharacter
+	mov a,#'R'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	mov a,#'_'
+	call sendCharacter
+	mov a,#'P'
+	call sendCharacter
+	mov a,#'R'
+	call sendCharacter
+	mov a,#'I'
+	call sendCharacter
+	mov a,#'M'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	JMP $
 	ret
 
 acabou2:
+	;aqui não é primo
 	mov r4, #02h
+ACALL lcd_init
+	mov a,#'N'
+	call sendCharacter
+	mov a,#'U'
+	call sendCharacter
+	mov a,#'M'
+	call sendCharacter
+	mov a,#'E'
+	call sendCharacter
+	mov a,#'R'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	mov a,#'_'
+	call sendCharacter
+	mov a,#'N'
+	call sendCharacter
+	mov a,#'A'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	mov a,#'_'
+	call sendCharacter
+	mov a,#'P'
+	call sendCharacter
+	mov a,#'R'
+	call sendCharacter
+	mov a,#'I'
+	call sendCharacter
+	mov a,#'M'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	JMP $
+
 	ret
 	
 	
