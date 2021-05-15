@@ -6,18 +6,64 @@
 org 0000h
 	LJMP START
 
+aviso:
+	mov r4, #01h
+	ACALL lcd_init
+	mov a,#'N'
+	call sendCharacter
+	mov a,#'A'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	mov a,#'_'
+	call sendCharacter
+	mov a,#'I'
+	call sendCharacter
+	mov a,#'N'
+	call sendCharacter
+	mov a,#'S'
+	call sendCharacter
+	mov a,#'I'
+	call sendCharacter
+	mov a,#'R'
+	call sendCharacter
+	mov a,#'A'
+	call sendCharacter
+	mov a,#'_'
+	call sendCharacter
+	mov a,#'M'
+	call sendCharacter
+	mov a,#'A'
+	call sendCharacter
+	mov a,#'I'
+	call sendCharacter
+	mov a,#'O'
+	call sendCharacter
+	mov a,#'R'
+	call sendCharacter
+	mov a, #047h
+	acall posicionaCursor
+	mov a,#'4'
+	call sendCharacter
+	mov a,#'0'
+	call sendCharacter
+	JMP $
+	acall clearDisplay
+	ret
+
 ;MAIN
 org 0100h
 START:
 	;aqui tem que colocar um numero menor que 41
-	mov a, #041
+	;call aviso
+	mov a, #012
 	mov 50h, a
 	mov b, a
 	dec b
 	mov 51h, b
 	div ab
 	mov a, b
-	jz acabou2
+	jz nprimo
 	call menos
 	sjmp $
 	
@@ -26,7 +72,7 @@ menos:
 	mov a, b
 	dec a
 	dec a
-	jz acabou
+	jz primo
 	inc a
 	mov b, a
 	mov a, 50h
@@ -35,13 +81,12 @@ menos:
 	dec a
 	mov 51h, a
 	mov a, b
-	jz acabou2
+	jz nprimo
 	call menos
 	ret
 
-acabou:
+primo:
 	;aqui é primo
-	mov r4, #01h
 	ACALL lcd_init
 	mov a,#'N'
 	call sendCharacter
@@ -70,10 +115,9 @@ acabou:
 	JMP $
 	ret
 
-acabou2:
+nprimo:
 	;aqui não é primo
-	mov r4, #02h
-ACALL lcd_init
+	ACALL lcd_init
 	mov a,#'N'
 	call sendCharacter
 	mov a,#'U'
