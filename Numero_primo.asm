@@ -51,12 +51,30 @@ aviso:
 	acall clearDisplay
 	ret
 
+popula:
+	; put data in RAM
+	MOV 70H, #'#' 
+	MOV 71H, #'0'
+	MOV 72H, #'*'
+	MOV 73H, #'9'
+	MOV 74H, #'8'
+	MOV 75H, #'7'
+	MOV 76H, #'6'
+	MOV 77H, #'5'
+	MOV 78H, #'4'
+	MOV 79H, #'3'
+	MOV 7AH, #'2'
+	MOV 7BH, #'1'	 
+	ret
 ;MAIN
 org 0100h
 START:
 	;aqui tem que colocar um numero menor que 41
 	;call aviso
-	mov a, #012
+	;call clearDisplay
+	call popula
+	;call poevalor
+	mov a, #012	;aqui poe o valor que quer saber se é primo ou não
 	mov 50h, a
 	mov b, a
 	dec b
@@ -66,6 +84,25 @@ START:
 	jz nprimo
 	call menos
 	sjmp $
+
+poevalor:
+
+	;lembrando que o valor não pode ser maior que 40
+	ACALL lcd_init
+	ACALL leituraTeclado
+	;JNB F0, poevalor   ;if F0 is clear, jump to ROTINA
+	jnb f0, START
+	MOV A, #07h
+	ACALL posicionaCursor	
+	MOV A, #070h
+	ADD A, R0
+	MOV R0, A
+	MOV A, @R0        
+	ACALL sendCharacter
+	CLR F0
+	call poevalor
+	ret
+	
 	
 menos:
 	mov b, 51h
@@ -151,12 +188,57 @@ nprimo:
 	mov a,#'O'
 	call sendCharacter
 	JMP $
-
 	ret
 	
 	
 
 
+
+
+
+
+leituraTeclado:
+	MOV R0, #0			; clear R0 - the first key is key0
+
+	; scan row0
+	MOV P0, #0FFh	
+	CLR P0.0			; clear row0
+	CALL colScan		; call column-scan subroutine
+	JB F0, finish		; | if F0 is set, jump to end of program 
+						; | (because the pressed key was found and its number is in  R0)
+	; scan row1
+	SETB P0.0			; set row0
+	CLR P0.1			; clear row1
+	CALL colScan		; call column-scan subroutine
+	JB F0, finish		; | if F0 is set, jump to end of program 
+						; | (because the pressed key was found and its number is in  R0)
+	; scan row2
+	SETB P0.1			; set row1
+	CLR P0.2			; clear row2
+	CALL colScan		; call column-scan subroutine
+	JB F0, finish		; | if F0 is set, jump to end of program 
+						; | (because the pressed key was found and its number is in  R0)
+	; scan row3
+	SETB P0.2			; set row2
+	CLR P0.3			; clear row3
+	CALL colScan		; call column-scan subroutine
+	JB F0, finish		; | if F0 is set, jump to end of program 
+						; | (because the pressed key was found and its number is in  R0)
+finish:
+	RET
+
+; column-scan subroutine
+colScan:
+	JNB P0.4, gotKey	; if col0 is cleared - key found
+	INC R0				; otherwise move to next key
+	JNB P0.5, gotKey	; if col1 is cleared - key found
+	INC R0				; otherwise move to next key
+	JNB P0.6, gotKey	; if col2 is cleared - key found
+	INC R0				; otherwise move to next key
+	RET					; return from subroutine - key not found
+gotKey:
+	SETB F0				; key found - set F0
+	RET					; and return from subroutine
 
 
 
@@ -341,14 +423,11 @@ clearDisplay:
 	SETB EN		; |
 	CLR EN		; | negative edge on E
 
-	MOV R6, #40
-	rotC:
 	CALL delay		; wait for BF to clear
-	DJNZ R6, rotC
 	RET
 
 
 delay:
-	MOV R0, #50
-	DJNZ R0, $
+	MOV R7, #50
+	DJNZ R7, $
 	RET
